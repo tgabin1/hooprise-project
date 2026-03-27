@@ -144,10 +144,3 @@ INSERT INTO programs (title, description, location, start_date, end_date, start_
 ('Youth Basketball Training Camp', 'Intensive 3-day basketball training for youth aged 12-18. Covers dribbling, shooting and teamwork.', 'BK Arena, Kimihurura',          '2026-04-10', '2026-04-12', '08:00', 30, 'camp',       0,    'open'),
 ('3x3 Basketball Tournament',      'Exciting 3v3 tournament open to all youth teams in Kigali. Win amazing prizes!',                     'Club Rafiki Court, Nyamirambo', '2026-04-20', '2026-04-20', '09:00', 40, 'tournament', 500,  'open'),
 ('Coaching Workshop',              'Learn the fundamentals of basketball coaching from experienced coaches.',                            'Kigali Arena, Remera',          '2026-05-05', '2026-05-05', '10:00', 20, 'workshop',   1000, 'open');
-```
-
----
-
-### File 2 — `client/.env.example` (new file)
-```
-VITE_API_URL=http://localhost:5000
