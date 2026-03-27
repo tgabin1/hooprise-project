@@ -261,9 +261,4 @@ hooprise/
 ## ⚠️ Important Notes
 
 - Render free tier sleeps after 15 minutes of inactivity — first request may take ~50 seconds
-- For payments to work in production, your Paypack account must be approved for live transactions
-- Never commit your `.env` file — it contains sensitive credentials
-
----
-
-Made with ❤️ in Rwanda 🇷🇼
+- For payments to work in production, your Paypack account must be approved for live transaction
