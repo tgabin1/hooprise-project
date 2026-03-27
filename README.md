@@ -2,7 +2,7 @@
 
 Rwanda's #1 Youth Basketball Platform. Book courts, join programs, request equipment and rise together.
 
-**Live Demo:** https://hooprise-project.vercel.app
+**Live Demo:** https://zesty-dango-155437.netlify.app
 
 ---
 
@@ -31,7 +31,7 @@ cd hooprise-project/hooprise
 Open your terminal and run:
 ```bash
 # Windows PowerShell
-& "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p < server/db/schema.sql
+Get-Content server/db/schema.sql | & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p hooprise
 
 # Mac/Linux
 mysql -u root -p < server/db/schema.sql
@@ -41,7 +41,7 @@ Enter your MySQL password when prompted.
 
 This will automatically:
 - Create the `hooprise` database
-- Create all 7 tables
+- Create all 8 tables
 - Insert sample courts, equipment and programs
 
 ---
@@ -82,8 +82,9 @@ ADMIN_EMAIL=your_admin_email@gmail.com
 > 1. Go to your Google Account
 > 2. Click Security
 > 3. Click App Passwords
-> 4. Select "Mail" and generate a 16-character password
-> 5. Paste it as your EMAIL_PASS
+> 4. Type a name like "HoopRise" and click Create
+> 5. Copy the 16-character password (no spaces)
+> 6. Paste it as your EMAIL_PASS
 
 > **PAYPACK** — Sign up at https://paypack.rw to get your Client ID and Secret
 
@@ -111,6 +112,11 @@ copy .env.example .env
 cp .env.example .env
 ```
 
+The `client/.env.example` already has the correct value for local development:
+```
+VITE_API_URL=http://localhost:5000
+```
+
 Start the frontend:
 ```bash
 npm run dev
@@ -127,7 +133,7 @@ npm run dev
 1. Go to **http://localhost:3000** and create an account
 2. Open MySQL and run:
 ```bash
-# Windows
+# Windows PowerShell
 & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p hooprise
 
 # Mac/Linux
@@ -153,8 +159,6 @@ hooprise/
 │   └── src/
 │       ├── App.jsx
 │       ├── index.css
-│       ├── hooks/
-│       │   └── useTheme.js
 │       └── components/
 │           ├── Navbar.jsx
 │           ├── Hero.jsx
@@ -168,7 +172,11 @@ hooprise/
 │           ├── AdminDashboard.jsx
 │           ├── AdminPasswordModal.jsx
 │           ├── NotificationBell.jsx
-│           └── Toast.jsx
+│           ├── Toast.jsx
+│           ├── Footer.jsx
+│           ├── Features.jsx
+│           ├── HowItWorks.jsx
+│           └── CTABanner.jsx
 │
 └── server/                    ← Node.js + Express backend
     ├── .env.example
@@ -244,9 +252,17 @@ hooprise/
 
 ## 🌐 Deployment
 
-- **Frontend** — [Vercel](https://vercel.com)
-- **Backend** — [Railway](https://railway.app)
-- **Database** — MySQL on Railway
+- **Frontend** — [Netlify](https://netlify.com)
+- **Backend** — [Render](https://render.com)
+- **Database** — [Aiven MySQL](https://aiven.io)
+
+---
+
+## ⚠️ Important Notes
+
+- Render free tier sleeps after 15 minutes of inactivity — first request may take ~50 seconds
+- For payments to work in production, your Paypack account must be approved for live transactions
+- Never commit your `.env` file — it contains sensitive credentials
 
 ---
 
