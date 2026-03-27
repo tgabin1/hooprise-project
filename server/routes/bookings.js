@@ -13,7 +13,6 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    // Get court price
     const [courtRows] = await db.query('SELECT price_rwf, name FROM courts WHERE id = ?', [court_id]);
     if (courtRows.length === 0) return res.status(404).json({ error: 'Court not found.' });
 
@@ -21,7 +20,6 @@ router.post('/', async (req, res) => {
     const hours = parseInt(duration) || 1;
     const total_cost = court.price_rwf * hours;
 
-    // Check slot is not already taken
     const [existing] = await db.query(
       "SELECT id FROM bookings WHERE court_id = ? AND date = ? AND time_slot = ? AND status = 'confirmed'",
       [court_id, date, time_slot]
@@ -30,7 +28,6 @@ router.post('/', async (req, res) => {
       return res.status(409).json({ error: 'This time slot is already booked. Please choose another.' });
     }
 
-    // Insert booking with pending status
     const [result] = await db.query(
       'INSERT INTO bookings (court_id, user_name, user_email, user_phone, date, time_slot, duration, total_cost, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [court_id, user_name, user_email, user_phone, date, time_slot, hours, total_cost, 'pending']
@@ -38,41 +35,30 @@ router.post('/', async (req, res) => {
 
     const bookingId = result.insertId;
 
-    // Initiate payment if court has a price
-    if (total_cost > 0) {
-      // Confirm booking immediately
-      await db.query('UPDATE bookings SET status = ? WHERE id = ?', ['confirmed', bookingId]);
+    // Confirm booking immediately
+    await db.query('UPDATE bookings SET status = ? WHERE id = ?', ['confirmed', bookingId]);
 
-      // Process payment in background — user doesn't wait
+    // Payment in background
+    if (total_cost > 0) {
       initiatePayment(user_phone, total_cost).catch(err => {
         console.error('Background payment error:', err);
       });
-
-      // Send email immediately
-      await sendBookingConfirmation(user_email, {
-        courtName: court.name,
-        date,
-        timeSlot: time_slot,
-        amount: total_cost
-      });
-
-      return res.status(201).json({
-        message: `Booking confirmed! Payment of ${total_cost} RWF initiated to ${user_phone} 🏀`,
-        booking: { id: bookingId, court_id, date, time_slot, duration: hours, total_cost }
-      });
     }
 
-    // Free court — confirm directly and send email
-    await db.query('UPDATE bookings SET status = ? WHERE id = ?', ['confirmed', bookingId]);
-    await sendBookingConfirmation(user_email, {
+    // Email in background — never blocks response
+    sendBookingConfirmation(user_email, {
       courtName: court.name,
       date,
       timeSlot: time_slot,
-      amount: 0
+      amount: total_cost
+    }).catch(err => {
+      console.error('Background email error:', err);
     });
 
-    res.status(201).json({
-      message: `Court booked! See you at ${court.name} 🏀`,
+    return res.status(201).json({
+      message: total_cost > 0
+        ? `Booking confirmed! Payment of ${total_cost} RWF initiated to ${user_phone} 🏀`
+        : `Court booked! See you at ${court.name} 🏀`,
       booking: { id: bookingId, court_id, date, time_slot, duration: hours, total_cost }
     });
 
