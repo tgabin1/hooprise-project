@@ -3,8 +3,6 @@ const axios = require('axios');
 let accessToken = null;
 
 const authenticate = async () => {
-  console.log('CLIENT ID:', process.env.PAYPACK_CLIENT_ID);
-  console.log('CLIENT SECRET:', process.env.PAYPACK_CLIENT_SECRET);
   const response = await axios.post('https://payments.paypack.rw/api/auth/agents/authorize', {
     client_id: process.env.PAYPACK_CLIENT_ID,
     client_secret: process.env.PAYPACK_CLIENT_SECRET
